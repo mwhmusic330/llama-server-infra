@@ -1,0 +1,56 @@
+{%- if not add_generation_prompt is defined %}{%- set add_generation_prompt = false %}{%- endif %}
+{%- set ns = namespace(found_tools=false) %}
+{%- for message in messages %}
+    {%- if message['role'] == 'tool_results' or message['role'] == 'tool' %}
+        {%- set ns.found_tools = true %}
+    {%- endif %}
+{%- endfor %}
+{%- for message in messages %}
+    {%- if message['role'] == 'system' %}
+        {%- if ns.found_tools %}
+            {{- '<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n' }}
+            {{- 'Environment: ipython\n' }}
+            {%- if message['content'] %}
+                {{- message['content'] }}
+            {%- endif %}
+            {{- '<|eot_id|>' }}
+        {%- else %}
+            {{- '<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\n' }}
+            {%- if message['content'] %}
+                {{- message['content'] }}
+            {%- endif %}
+            {{- '<|eot_id|>' }}
+        {%- endif %}
+    {%- elif message['role'] == 'user' %}
+        {{- '<|start_header_id|>user<|end_header_id|>\n\n' }}
+        {%- if message['content'] %}
+            {{- message['content'] }}
+        {%- endif %}
+        {{- '<|eot_id|>' }}
+    {%- elif message['role'] == 'assistant' %}
+        {{- '<|start_header_id|>assistant<|end_header_id|>\n\n' }}
+        {%- if message['content'] %}
+            {{- message['content'] }}
+        {%- endif %}
+        {%- if message['tool_calls'] %}
+            {%- for tool_call in message['tool_calls'] %}
+                {%- if tool_call['function']['name'] %}
+                    {{- '<|python_tag|>' + tool_call['function']['name'] + '(' }}
+                    {%- if tool_call['function']['arguments'] %}
+                        {%- set args = tool_call['function']['arguments'] | from_json %}
+                        {{- args | to_json }}
+                    {%- endif %}
+                    {{- ')' }}
+                {%- endif %}
+            {%- endfor %}
+        {%- endif %}
+        {{- '<|eot_id|>' }}
+    {%- elif message['role'] == 'tool' %}
+        {{- '<|start_header_id|>user<|end_header_id|>\n\n' }}
+        {{- message['content'] }}
+        {{- '<|eot_id|>' }}
+    {%- endif %}
+{%- endfor %}
+{%- if add_generation_prompt %}
+    {{- '<|start_header_id|>assistant<|end_header_id|>\n\n' }}
+{%- endif %}

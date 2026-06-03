@@ -1,0 +1,17 @@
+# Build artifacts
+build/
+
+# Models (large binary files)
+models/
+*.gguf
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
