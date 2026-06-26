@@ -4,10 +4,18 @@ After=network-online.target
 
 [Service]
 ExecStart=/opt/llama.cpp/build/bin/llama-server \
-  -m /opt/llama.cpp/models/model.gguf \
+  -m /opt/llama.cpp/models/qwen2.5-7b-q4_k_m.gguf \
   --host 0.0.0.0 --port 8080 \
   -ngl 99 \
-  --ctx-size 16384 --parallel 1 --repeat-penalty 1.1 --frequency-penalty 0.01 --chat-template-file /opt/llama.cpp/llama3-tool-template.jinja
+  --ctx-size 16384 \
+  --parallel 2 \
+  --cont-batching \
+  --flash-attn on \
+  --cache-reuse 256 \
+  --repeat-penalty 1.1 \
+  --frequency-penalty 0.01 \
+  --ui-mcp-proxy \
+  --chat-template-file /opt/llama.cpp/models/templates/Qwen-Qwen2.5-7B-Instruct.jinja
 
 User=michael
 Group=michael

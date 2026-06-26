@@ -1,0 +1,14 @@
+[Unit]
+Description=DuckDuckGo MCP Search Server
+After=network-online.target llama-server.service
+BindsTo=llama-server.service
+
+[Service]
+ExecStart=npx mcp-proxy --port 8090 -- npx duckduckgo-websearch
+User=michael
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=llama-server.service
+
