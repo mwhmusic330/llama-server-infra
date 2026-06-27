@@ -12,6 +12,9 @@ ExecStart=/opt/llama.cpp/build/bin/llama-server \
   --cont-batching \
   --flash-attn on \
   --cache-reuse 256 \
+  --threads 6 \
+  --threads-batch 6 \
+  --tools all \
   --repeat-penalty 1.1 \
   --frequency-penalty 0.01 \
   --ui-mcp-proxy \
