@@ -54,9 +54,13 @@ Web UI (port 8080) -> llama-server -> Qwen 2.5 7B
 
 ## Known issues
 
-- **Build b1-63e66fd**: `--ctx-size` and `-c` flags do not reliably override the model's
-  embedded `n_ctx`. Requesting e.g. `-c 32768` (Qwen 2.5's `n_ctx_train`) results in the
-  server only allocating 16384 — possibly capped by VRAM or silently clamped by this build.
-  Workaround: use the short form `-c` and verify with `/v1/models` (`n_ctx` field) and a
-  prompt above the claimed size. Rebuilding from latest source may resolve this.
+- **Build b1-63e66fd**: `--ctx-size`/`-c` does not reliably override the model's
+  embedded `n_ctx`. Requesting `-c 32768` (Qwen 2.5's `n_ctx_train`) only allocates
+  16384 — possibly VRAM-capped or silently clamped. Workaround: use the short form
+  `-c` and verify with `/v1/models` (`n_ctx` field). Rebuilding from latest source
+  may resolve this.
+
+- **No `--system-prompt` flag** in build b1-63e66fd — the flag is not recognized.
+  Model behavior customization must be done client-side (e.g. opencode config
+  `instructions`, `AGENTS.md`, or per-agent `prompt`).
 
