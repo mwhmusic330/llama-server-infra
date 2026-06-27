@@ -7,7 +7,7 @@ ExecStart=/opt/llama.cpp/build/bin/llama-server \
   -m /opt/llama.cpp/models/qwen2.5-7b-q4_k_m.gguf \
   --host 0.0.0.0 --port 8080 \
   -ngl 99 \
-  --ctx-size 16384 \
+  -c 32768 \
   --parallel 2 \
   --cont-batching \
   --flash-attn on \

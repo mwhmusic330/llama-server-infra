@@ -51,3 +51,12 @@ Web UI (port 8080) -> llama-server -> Qwen 2.5 7B
 - Qwen 2.5 7B Q4_K_M uses ~4.4GB VRAM (vs ~5.5GB for Llama 3.1 8B)
 - DuckDuckGo search requires no API key
 - MCP servers are configured via web UI at Settings -> MCP Servers
+
+## Known issues
+
+- **Build b1-63e66fd**: `--ctx-size` and `-c` flags do not reliably override the model's
+  embedded `n_ctx`. Requesting e.g. `-c 32768` (Qwen 2.5's `n_ctx_train`) results in the
+  server only allocating 16384 — possibly capped by VRAM or silently clamped by this build.
+  Workaround: use the short form `-c` and verify with `/v1/models` (`n_ctx` field) and a
+  prompt above the claimed size. Rebuilding from latest source may resolve this.
+
