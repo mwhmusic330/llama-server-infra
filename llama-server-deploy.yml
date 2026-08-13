@@ -1,0 +1,29 @@
+name: Deploy llama-server
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy files and restart service
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 192.168.1.8
+          username: michael
+          key: ${{ secrets.LLAMA_SSH_KEY }}
+          script: |
+            cp ~/llama-server-infra/llama-server.service /etc/systemd/system/
+            cp ~/llama-server-infra/llama3-tool-template.jinja /opt/llama.cpp/
+            systemctl daemon-reload
+            systemctl restart llama-server
+
+      - name: Health check
+        run: |
+          sleep 5
+          curl -sf http://192.168.1.8:8080/v1/models && echo "OK" || echo "FAIL"

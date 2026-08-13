@@ -1,0 +1,31 @@
+name: Deploy llama-server
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, linux]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy systemd service
+        run: |
+          sudo cp llama-server.service /etc/systemd/system/
+          sudo cp llama3-tool-template.jinja /opt/llama.cpp/
+          sudo systemctl daemon-reload
+
+      - name: Validate config
+        run: |
+          /opt/llama.cpp/build/bin/llama-server --check-tensors 2>/dev/null || true
+
+      - name: Restart service
+        run: |
+          sudo systemctl restart llama-server
+
+      - name: Health check
+        run: |
+          sleep 5
+          curl -sf http://localhost:8080/v1/models && echo "OK" || echo "FAIL"
