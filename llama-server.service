@@ -3,22 +3,7 @@ Description=llama.cpp server
 After=network-online.target
 
 [Service]
-ExecStart=/opt/llama.cpp/build/bin/llama-server \
-  -m /opt/llama.cpp/models/qwen2.5-7b-q4_k_m.gguf \
-  --host 0.0.0.0 --port 8080 \
-  -ngl 99 \
-  -c 32768 \
-  --parallel 2 \
-  --cont-batching \
-  --flash-attn on \
-  --cache-reuse 256 \
-  --threads 6 \
-  --threads-batch 6 \
-  --tools all \
-  --repeat-penalty 1.1 \
-  --frequency-penalty 0.01 \
-  --ui-mcp-proxy \
-  --chat-template-file /opt/llama.cpp/models/templates/Qwen-Qwen2.5-7B-Instruct.jinja
+ExecStart=/opt/llama.cpp/build/bin/llama-server   -m /opt/llama.cpp/models/qwen3.5-9b-ud-q3_k_xl.gguf   --host 0.0.0.0 --port 8080   -ngl 35   -c 16384   --cont-batching   --flash-attn on   --cache-reuse 256   --threads 6   --threads-batch 6   --temp 0.7   --top-p 0.95   --repeat-penalty 1.1   --frequency-penalty 0.3   --tools all   --ui-mcp-proxy
 
 User=michael
 Group=michael
