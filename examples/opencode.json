@@ -1,0 +1,71 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "ddg_search": {
+      "type": "local",
+      "command": ["npx", "-y", "@oevortex/ddg_search@latest"],
+      "enabled": true
+    },
+    "omada": {
+      "type": "remote",
+      "url": "http://LLAMA_HOST:8091/mcp",
+      "enabled": true
+    }
+  },
+  "provider": {
+    "llama.cpp": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "llama-server (local)",
+      "options": {
+        "baseURL": "http://LLAMA_HOST:8080/v1"
+      },
+      "models": {
+        "model": {
+          "name": "Qwen 3.5 9B (local)",
+          "tools": true,
+          "limit": { "context": 32768, "output": 4096 },
+          "options": {
+            "chat_template_kwargs": { "enable_thinking": false }
+          }
+        }
+      }
+    },
+    "mem0-proxy": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "llama-server via mem0 memory proxy",
+      "options": {
+        "baseURL": "http://LLAMA_HOST:8000/v1"
+      },
+      "models": {
+        "qwen": {
+          "name": "Qwen 3.5 9B + mem0 memory",
+          "tools": true,
+          "limit": { "context": 32768, "output": 4096 },
+          "options": {
+            "chat_template_kwargs": { "enable_thinking": false }
+          }
+        }
+      }
+    }
+  },
+  "agent": {
+    "memory": {
+      "description": "Coding assistant with persistent mem0 memory. Read-only: it can search and answer, not edit files or run commands.",
+      "mode": "primary",
+      "model": "mem0-proxy/qwen",
+      "temperature": 0.3,
+      "steps": 4,
+      "tools": {
+        "omada_*": false,
+        "ddg_search_*": false
+      },
+      "permission": {
+        "edit": "deny",
+        "bash": "deny",
+        "webfetch": "deny",
+        "task": "deny"
+      },
+      "prompt": "You are a concise coding assistant. CRITICAL RULES: 1. Never ask questions or offer options. 2. Never suggest next steps or add a 'Next Move' or 'Blocked' section. 3. Answer once, then stop completely. 4. Do not repeat or summarize your previous answer. 5. Only call tools when the user explicitly asks for an action that needs them. A system message may contain a section titled '[Persistent User Profile/Memories]' with facts from earlier sessions: treat them as reliable, use them only when relevant, never invent memories that are not listed, and do not mention that section unless asked."
+    }
+  }
+}

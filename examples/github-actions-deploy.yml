@@ -1,0 +1,32 @@
+# Example only. Not active: it lives outside .github/workflows/ so GitHub does not run it.
+# To use it, move it to .github/workflows/ and set the repository variable LLAMA_HOST
+# and the secret LLAMA_SSH_KEY. Note that it deploys on every push to main.
+
+name: Deploy llama-server
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy unit and restart service
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ vars.LLAMA_HOST }}
+          username: ${{ vars.LLAMA_USER }}
+          key: ${{ secrets.LLAMA_SSH_KEY }}
+          script: |
+            sudo cp ~/llama-server-infra/llama-server/llama-server.service /etc/systemd/system/
+            sudo systemctl daemon-reload
+            sudo systemctl restart llama-server
+
+      - name: Health check
+        run: |
+          sleep 5
+          curl -sf "http://${{ vars.LLAMA_HOST }}:8080/v1/models" && echo "OK" || echo "FAIL"

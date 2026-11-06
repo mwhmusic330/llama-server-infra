@@ -1,0 +1,15 @@
+[Unit]
+Description=DuckDuckGo MCP Search Server
+After=network-online.target llama-server.service
+BindsTo=llama-server.service
+
+[Service]
+# mcp-proxy bridges the stdio DuckDuckGo MCP server to HTTP on port 8090.
+# llama-server's --ui-mcp-proxy relays Web UI requests to it.
+ExecStart=npx mcp-proxy --port 8090 -- npx duckduckgo-websearch
+User=YOUR_USER
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=llama-server.service

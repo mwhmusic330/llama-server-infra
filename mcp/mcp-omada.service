@@ -1,0 +1,25 @@
+[Unit]
+Description=Omada Controller MCP Server
+After=network-online.target
+
+[Service]
+Type=simple
+User=YOUR_USER
+Group=YOUR_USER
+# Controller credentials go in /etc/default/mcp-omada (root-only, mode 600). Never commit that file.
+EnvironmentFile=-/etc/default/mcp-omada
+Environment=NODE_ENV=production
+Environment=MCP_SERVER_USE_HTTP=true
+Environment=MCP_HTTP_PORT=8091
+# Localhost by default. This server exposes ~50 tools that change network configuration
+# (firewall, WAN, port profiles, reboots). Bind to 0.0.0.0 only behind a firewall or auth.
+Environment=MCP_HTTP_BIND_ADDR=127.0.0.1
+Environment=MCP_HTTP_PATH=/mcp
+Environment=MCP_HTTP_ENABLE_HEALTHCHECK=true
+ExecStart=/usr/bin/node /opt/omada-mcp/dist/index.js
+Restart=always
+RestartSec=3
+WorkingDirectory=/opt/omada-mcp
+
+[Install]
+WantedBy=default.target

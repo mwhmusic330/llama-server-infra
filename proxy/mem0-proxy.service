@@ -1,0 +1,17 @@
+[Unit]
+Description=mem0 memory proxy for llama.cpp
+After=network-online.target llama-server.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=YOUR_USER
+Group=YOUR_USER
+WorkingDirectory=/opt/mem0-proxy
+EnvironmentFile=/opt/mem0-proxy/.env
+ExecStart=/opt/mem0-proxy/venv/bin/uvicorn proxy:app --host 0.0.0.0 --port ${MEM0_PROXY_PORT}
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

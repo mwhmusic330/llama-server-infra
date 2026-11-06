@@ -1,0 +1,21 @@
+# Secrets and local config
+.env
+*.env.local
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Runtime data
+mem0_storage/
+*.db
+*.sqlite3
+
+# Staged or backup copies of system files
+*.bak
+*.prev
+*.prev[0-9]
+*.new
+*.log
